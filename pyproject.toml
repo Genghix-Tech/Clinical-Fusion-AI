@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "clinicalfusion"
+version = "0.1.0"
+description = "Multimodal clinical prediction & research intelligence platform (images + tabular + time-series)"
+requires-python = ">=3.9"
+dependencies = [
+  "numpy",
+  "pandas",
+  "scipy",
+  "scikit-learn",
+  "matplotlib",
+  "torch",
+  "xgboost",
+  "fastapi",
+  "uvicorn[standard]",
+  "sqlalchemy>=2.0",
+  "pydantic>=2",
+]
+
+[project.optional-dependencies]
+catboost = ["catboost"]
+mlflow = ["mlflow-skinny"]
+postgres = ["psycopg2-binary"]
+dev = ["pytest", "httpx"]
+
+[project.scripts]
+clinicalfusion = "clinicalfusion.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+clinicalfusion = ["api/static/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["ignore::DeprecationWarning", "ignore::UserWarning"]

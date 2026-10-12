@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>ClinicalFusion</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <span class="logo" aria-hidden="true">
+      <svg viewBox="0 0 32 32" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="8" r="3"/><circle cx="7" cy="24" r="3"/><circle cx="25" cy="16" r="4"/><path d="M10 8c7 0 5 8 11 8M10 24c7 0 5-8 11-8"/></svg>
+    </span>
+    <div><h1>ClinicalFusion</h1><p>Multimodal clinical prediction &amp; research intelligence</p></div>
+  </div>
+  <div class="controls">
+    <label class="select">Run <select id="runSelect"></select></label>
+    <button id="newRunBtn" class="primary">New run</button>
+  </div>
+</header>
+<div class="banner" role="note"><span class="dot"></span>Research use only &mdash; not a medical device. Heatmaps, attributions and attention weights describe model behaviour, not clinical causation.</div>
+
+<main>
+  <dialog id="newRunDialog">
+    <form method="dialog" id="newRunForm">
+      <h2>Start an experiment run</h2>
+      <p class="muted">Trains Experiments A&ndash;D on a synthetic cohort and evaluates them on held-out patients.</p>
+      <label>Preset
+        <select name="preset"><option value="fast">fast (~1&ndash;2 min)</option><option value="standard">standard (longer)</option></select>
+      </label>
+      <label>Patients <input type="number" name="n_patients" min="200" max="20000" placeholder="preset default"></label>
+      <label>Time-series model <select name="ts_arch"><option value="">preset default (TCN)</option><option value="tcn">Temporal CNN</option><option value="lstm">LSTM</option></select></label>
+      <label>Seed <input type="number" name="seed" min="0" placeholder="42"></label>
+      <div class="row"><button value="cancel" class="ghost">Cancel</button><button value="go" class="primary" id="startRunBtn">Start</button></div>
+    </form>
+  </dialog>
+
+  <section id="status" class="card" hidden></section>
+  <div id="empty" class="card empty" hidden>
+    <h2>No finished runs yet</h2>
+    <p>Start a run to train the image, tabular, time-series and fusion models and see how they compare.</p>
+    <button class="primary" id="emptyStart">Start a run</button>
+  </div>
+
+  <div id="report" hidden>
+    <nav class="tabs" id="tabs"></nav>
+    <section data-tab="Overview" id="s-overview"></section>
+    <section data-tab="Comparison" id="s-compare"></section>
+    <section data-tab="Calibration &amp; uncertainty" id="s-calib"></section>
+    <section data-tab="Missing data" id="s-missing"></section>
+    <section data-tab="Explainability" id="s-explain"></section>
+    <section data-tab="Try a patient" id="s-predict"></section>
+    <section data-tab="Data quality" id="s-data"></section>
+  </div>
+</main>
+<script src="app.js"></script>
+</body>
+</html>

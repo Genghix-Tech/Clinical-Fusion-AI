@@ -1,0 +1,42 @@
+# API + dashboard (http://localhost:8000), PostgreSQL, and an MLflow tracking server (http://localhost:5000).
+# Development defaults only: change the passwords and set CF_API_KEY before exposing anything beyond localhost.
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: cf
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cf-dev-only}
+      POSTGRES_DB: clinicalfusion
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cf -d clinicalfusion"]
+      interval: 5s
+      retries: 10
+    ports: ["127.0.0.1:5432:5432"]
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:latest
+    command: mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri sqlite:///mlflow/mlflow.db --default-artifact-root /mlflow/artifacts
+    volumes: [mlflow:/mlflow]
+    ports: ["127.0.0.1:5000:5000"]
+
+  api:
+    build: .
+    depends_on:
+      db: {condition: service_healthy}
+    environment:
+      DATABASE_URL: postgresql+psycopg2://cf:${POSTGRES_PASSWORD:-cf-dev-only}@db:5432/clinicalfusion
+      CF_ARTIFACT_DIR: /data/artifacts
+      CF_API_KEY: ${CF_API_KEY:-}
+      CF_MLFLOW: "1"
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      # CF_DATA_DIR: /cohort            # mount a real cohort (docs/REAL_DATA.md) and uncomment
+    volumes:
+      - artifacts:/data
+      # - ./my_cohort:/cohort:ro
+    ports: ["127.0.0.1:8000:8000"]
+
+volumes:
+  pgdata:
+  mlflow:
+  artifacts:
